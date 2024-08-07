@@ -1,0 +1,22 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+COPY ["package.json", "package-lock.json", "tsconfig.json", "./"]
+RUN npm cache clean --force
+RUN npm install
+COPY . .
+
+COPY sshd_config /etc/ssh/
+COPY entrypoint.sh ./
+
+# Start and enable SSH (Azure)
+RUN apk add openssh \
+    && echo "root:Docker!" | chpasswd \
+    && chmod +x ./entrypoint.sh \
+    && cd /etc/ssh/ \
+    && ssh-keygen -A
+
+EXPOSE 3000 2222
+
+ENTRYPOINT [ "./entrypoint.sh" ]

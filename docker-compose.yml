@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  app:
+    container_name: consulta-brasil-backend
+    build: .
+    env_file:
+      .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: db
+      BCRYPT_HASH_ROUND: 10
+    restart: unless-stopped
+  db:
+    image: postgres:16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+    volumes:
+      - postgres-data-dev:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/init-db.sh
+    restart: unless-stopped
+volumes:
+  postgres-data-dev:

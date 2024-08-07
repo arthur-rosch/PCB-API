@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email de Ativação do Bot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+    table {
+      width: 80%;
+      margin: 20px auto;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #dddddd;
+      padding: 8px;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Novo Agendamento - CNH</h1>
+  <p>Olá, temos mais um pedido de agendamento para {{ user.personalInfo.nomeCompleto }},</p>
+  <p>Necessitamos que o agendamento ocorra com a máxima agilidade e o envio do e-mail com os detalhes do usuário também.</p>
+  <p>Detalhes para o agendamento:</p>
+  <table>
+    <tr>
+      <th colspan="2">Protocolo Interno Agendamento</th>
+    </tr>
+    <tr>
+      <td>Protocolo Interno:</td>
+      <td>{{ user.payment.id }}</td>
+    </tr>
+    <tr>
+      <th colspan="2">Dados Pessoais</th>
+    </tr>
+    <tr>
+      <td>Nome Completo:</td>
+      <td>{{ user.personalInfo.nomeCompleto }}</td>
+    </tr>
+    <tr>
+      <td>Data de Nascimento:</td>
+      <td>{{ user.personalInfo.dataNascimento }}</td>
+    </tr>
+    <tr>
+      <td>CPF:</td>
+      <td>{{ user.personalInfo.cpf }}</td>
+    </tr>
+    <tr>
+      <td>Email:</td>
+      <td>{{ user.personalInfo.email }}</td>
+    </tr>
+    <tr>
+      <td>Telefone:</td>
+      <td>{{ user.personalInfo.telefone }}</td>
+    </tr>
+    <tr>
+      <td>Sexo:</td>
+      <td>{{ user.personalInfo.sexo }}</td>
+    </tr>
+    <tr>
+      <td>Serviço :</td>
+      <td>{{ user.personalInfo.servico }}</td>
+    </tr>
+    <tr>
+      <td>Categoria :</td>
+      <td>{{ user.personalInfo.extraInfo.categoria }}</td>
+    </tr>
+    <tr>
+      <td>Deficiente :</td>
+      <td>{{ user.personalInfo.extraInfo.deficiente }}</td>
+    </tr>
+    <tr>
+      <td>Estado Emissor RG:</td>
+      <td>{{ user.personalInfo.estadoEmissorRg }}</td>
+    </tr>
+    <tr>
+      <td>Estado:</td>
+      <td>{{ user.personalInfo.estado }}</td>
+    </tr>
+    <tr>
+      <td>Cidade:</td>
+      <td>{{ user.personalInfo.cidade }}</td>
+    </tr>
+    <tr>
+      <th colspan="2">Preferências de Agendamento</th>
+    </tr>
+    <tr>
+      <td>Posto de Atendimento:</td>
+      <td>{{ user.preference.postoAtendimento }}</td>
+    </tr>
+    <tr>
+      <td>Dia Preferencial 1:</td>
+      <td>{{ user.preference.diaPreferencial1 }}</td>
+    </tr>
+    <tr>
+      <td>Turno Preferencial 1:</td>
+      <td>{{ user.preference.turnoPreferencial1 }}</td>
+    </tr>
+    <tr>
+      <td>Dia Preferencial 2:</td>
+      <td>{{ user.preference.diaPreferencial2 }}</td>
+    </tr>
+    <tr>
+      <td>Turno Preferencial 2:</td>
+      <td>{{ user.preference.turnoPreferencial2 }}</td>
+    </tr>
+    <tr>
+      <th colspan="2">Detalhes de Pagamento</th>
+    </tr>
+    <tr>
+      <td>Valor do Pagamento:</td>
+      <td>{{ user.payment.amount }}</td>
+    </tr>
+    <tr>
+      <td>Status do Pagamento:</td>
+      <td>{{ user.payment.paymentStatus }}</td>
+    </tr>
+    <tr>
+      <td>ID da Transação:</td>
+      <td>{{ user.payment.transactionId }}</td>
+    </tr>
+    <tr>
+      <td>Nome do Devedor:</td>
+      <td>{{ user.payment.debtorName }}</td>
+    </tr>
+    <tr>
+      <td>Documento do Devedor:</td>
+      <td>{{ user.payment.debtorDocument }}</td>
+    </tr>
+    <tr>
+      <td>Informação Adicional:</td>
+      <td>{{ user.payment.additionalInformationValue }}</td>
+    </tr>
+    <th colspan="3">Dados GOV Agendamento</th>
+    <tr>
+      <td>Login:</td>
+      <td>{{ user.personalInfo.login }}</td>
+    </tr>
+    <tr>
+      <td>Senha:</td>
+      <td>{{ user.personalInfo.senha }}</td>
+    </tr>
+    <tr>
+      <td>Contato:</td>
+      <td>{{ user.personalInfo.telefone }} ou {{ user.personalInfo.email }}</td>
+    </tr>
+  </table>
+  <p>Atenciosamente,</p>
+  <p>Equipe, Consulta Brasil</p>
+</body>
+</html>
