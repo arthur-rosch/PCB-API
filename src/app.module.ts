@@ -7,12 +7,14 @@ import { SchedulingModule } from './modules/scheduling.modules';
 import { PaymentModule } from './modules/payment.modules';
 import { VerifySignatureMiddleware } from './middleware/webhook';
 @Module({
-  imports: [TypeOrmModule.forRoot(typeOrmConfig), SchedulingModule, PaymentModule],
+  imports: [
+    TypeOrmModule.forRoot(typeOrmConfig),
+    SchedulingModule,
+    PaymentModule,
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(VerifySignatureMiddleware) 
-      .forRoutes('payment/webhookPix'); 
+    consumer.apply(VerifySignatureMiddleware).forRoutes('payment/webhookPix');
   }
 }

@@ -9,7 +9,6 @@ import { Payment } from 'src/entity/payment.entity';
 import axios from 'axios';
 import { BOT_ENABLE } from 'src/configs/general.config';
 
-
 interface DestinationObject {
   tipoServico: number;
   accountId: string;
@@ -20,7 +19,7 @@ interface DestinationObject {
   preferredTimeOption1: string;
   preferredTimeOption2: string;
   numeroTelefone: string;
-  idPayment: string
+  idPayment: string;
 }
 
 @Injectable()
@@ -47,15 +46,15 @@ export class SchedulingService {
       const { pessoais, agendamento } = createSchedulingDto;
 
       const servico = pessoais.tipoServico || pessoais.via_rg;
-      
-      if(!servico){
-       throw new Error('Erro ao obter tipo de serviço.');
+
+      if (!servico) {
+        throw new Error('Erro ao obter tipo de serviço.');
       }
 
       const pixData: any = await this.paymentService.createPIX({
         nome: pessoais.nome_completo,
         documento: pessoais.cpf,
-        servico: servico
+        servico: servico,
       });
 
       const personalInfo = new PersonalInfo();
@@ -73,7 +72,7 @@ export class SchedulingService {
       if (servico === 'CNH') {
         personalInfo.extraInfo = {
           categoria: pessoais.categoria,
-          deficiente: pessoais.deficiente
+          deficiente: pessoais.deficiente,
         };
       }
 
@@ -126,15 +125,15 @@ export class SchedulingService {
     const { preference, personalInfo, payment } = scheduling;
 
     const tipoServico = personalInfo.servico === '2ª Via RG' ? 2 : 1;
-    const accountId = personalInfo.login; 
-    const password = personalInfo.senha; 
+    const accountId = personalInfo.login;
+    const password = personalInfo.senha;
     const postoDeAtendimento = preference.postoAtendimento;
     const dataDesejada1 = this.formatDate(preference.diaPreferencial1);
     const dataDesejada2 = this.formatDate(preference.diaPreferencial2);
-    const preferredTimeOption1 = preference.turnoPreferencial1; 
-    const preferredTimeOption2 = preference.turnoPreferencial2; 
+    const preferredTimeOption1 = preference.turnoPreferencial1;
+    const preferredTimeOption2 = preference.turnoPreferencial2;
     const numeroTelefone = personalInfo.telefone;
-    const idPayment = payment.id
+    const idPayment = payment.id;
 
     return {
       tipoServico,
@@ -146,7 +145,7 @@ export class SchedulingService {
       preferredTimeOption1,
       preferredTimeOption2,
       numeroTelefone,
-      idPayment
+      idPayment,
     };
   }
 
@@ -157,23 +156,19 @@ export class SchedulingService {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   }
-  
 
   async triggerBOT(userInfosScheduling: Scheduling): Promise<boolean> {
     const url = `https://bot-agendamento-cgahg3ajgve3e0fa.brazilsouth-01.azurewebsites.net/scheduling/start_scheduling`;
 
-    const dataSend = SchedulingService.convertToDestination(userInfosScheduling) 
+    const dataSend =
+      SchedulingService.convertToDestination(userInfosScheduling);
 
-    try { 
-      const response = await axios.post(
-        url,
-        dataSend,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
+    try {
+      const response = await axios.post(url, dataSend, {
+        headers: {
+          'Content-Type': 'application/json',
         },
-      );
+      });
 
       return true;
     } catch (error) {
@@ -181,7 +176,11 @@ export class SchedulingService {
     }
   }
 
-  async updateSchedulingDatasBOT(id: string, option: string,  textResult: string): Promise<boolean> {
+  async updateSchedulingDatasBOT(
+    id: string,
+    option: string,
+    textResult: string,
+  ): Promise<boolean> {
     try {
       const scheduling = await this.schedulingRepository
         .createQueryBuilder('scheduling')
@@ -190,11 +189,11 @@ export class SchedulingService {
         .leftJoinAndSelect('scheduling.personalInfo', 'personalInfo')
         .where('payment.id = :paymentId', { paymentId: id })
         .getOne();
-  
+
       if (!scheduling) {
         throw new Error('Agendamento não encontrado');
       }
-  
+
       if (option === 'success') {
         scheduling.payment.scheduledWithBOT = true;
         scheduling.payment.schedulingResult = textResult;
@@ -205,9 +204,9 @@ export class SchedulingService {
       } else {
         throw new Error('Opção inválida');
       }
-  
+
       await this.schedulingRepository.save(scheduling);
-  
+
       return true;
     } catch (error) {
       console.error('Erro ao atualizar dados de agendamento pelo bot:', error);
