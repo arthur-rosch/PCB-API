@@ -171,19 +171,19 @@ export class PaymentService {
 
   async processWebhook(responseBody: any): Promise<any> {
     try {
-      // const externalId = responseBody.external_id;
+      const externalId = responseBody.external_id;
 
-      // const payment = await this.paymentRepository.findOneBy({
-      //   id: externalId,
-      // });
+      const payment = await this.paymentRepository.findOneBy({
+        id: externalId,
+      });
 
-      // if (!payment) {
-      //   throw new Error('Payment not found');
-      // }
+      if (!payment) {
+        throw new Error('Payment not found');
+      }
 
-      // payment.paymentStatus = responseBody.transactionType;
+      payment.paymentStatus = responseBody.transactionType;
 
-      // await this.paymentRepository.save(payment);
+      await this.paymentRepository.save(payment);
 
       return {
         status: 200,

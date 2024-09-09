@@ -7,13 +7,7 @@ import {
   Param,
 } from '@nestjs/common';
 import { SchedulingService } from 'src/service/scheduling.service';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBody,
-  ApiParam,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Scheduling } from 'src/entity/scheduling.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';

@@ -7,7 +7,6 @@ import { Preference } from 'src/entity/preferences.entity';
 import { PaymentService } from './payment.service';
 import { Payment } from 'src/entity/payment.entity';
 import axios from 'axios';
-import { BOT_ENABLE } from 'src/configs/general.config';
 
 interface DestinationObject {
   tipoServico: number;
@@ -68,6 +67,9 @@ export class SchedulingService {
       personalInfo.telefone = pessoais.telefone;
       personalInfo.sexo = pessoais.sexo;
       personalInfo.servico = servico;
+      personalInfo.termoColetaDadosSensiveis =
+        pessoais.termoColetaDadosSensiveis;
+      personalInfo.termoLoginGov = pessoais.termoLoginGov;
 
       if (servico === 'CNH') {
         personalInfo.extraInfo = {
