@@ -16,6 +16,8 @@ import * as nodemailer from 'nodemailer';
 import path from 'path';
 import { readFileSync } from 'fs';
 import * as Handlebars from 'handlebars';
+import { PixRequest } from 'src/types';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class PaymentService {
@@ -260,6 +262,7 @@ export class PaymentService {
       throw new Error(`Erro ao enviar informações: ${error.message}`);
     }
   }
+
   async checkStatus(paymentId: any): Promise<any> {
     try {
       const userInfos = await this.schedulingRepository.findOne({
@@ -310,5 +313,82 @@ export class PaymentService {
     const html = template({ user: data });
 
     return html;
+  }
+
+  async createPixSuitPay({
+    servico,
+    name,
+    document,
+    email,
+  }: {
+    servico: string;
+    name: string;
+    document: string;
+    email: string;
+  }) {
+    const newPayment = new Payment();
+    const url = `https://sandbox.ws.suitpay.app/api/v1/gateway/request-qrcode`;
+
+    const today = new Date();
+    const dueDate = new Date(today);
+    dueDate.setDate(today.getDate() + 1);
+
+    const amount =
+      servico === 'CNH'
+        ? Number(VALUE_SCHEDULING_CNH)
+        : Number(VALUE_SCHEDULING);
+
+    const payload: PixRequest = {
+      requestNumber: randomUUID(),
+      dueDate: dueDate.toISOString().split('T')[0],
+      quantity: 1,
+      value: amount,
+      description: 'Pgto Consulta Brasil ref. agend. Poupa Tempo',
+      amount,
+      client: {
+        name,
+        document,
+        email,
+        address: {
+          codIbge: '123',
+          street: 'Rua Exemplo',
+          number: '123',
+          zipCode: '12345678',
+          neighborhood: 'Centro',
+          city: 'São Paulo',
+          state: 'SP',
+        },
+      },
+    };
+
+    try {
+      const response = await this.httpService
+        .post(url, payload, {
+          headers: {
+            ci: 'edsonbetwiu_1715350298868',
+            cs: 'b1819f34ddaf976968479c8a3fed578cf6c89b8bc17371d39b6d27c1e3de2d40c5aac3237e4c406cbe61fef0a01cb27e',
+            'Content-Type': 'application/json',
+          },
+        })
+        .toPromise();
+
+      newPayment.debtorName = name;
+      newPayment.amount = String(amount);
+      newPayment.debtorDocument = document;
+      newPayment.paymentStatus = 'AUSENTE';
+      newPayment.additionalInformationValue = '';
+      newPayment.transactionId = response.data.idTransaction;
+
+      const paymentSave = await this.paymentRepository.save(newPayment);
+
+      return {
+        image: response.data.paymentCodeBase64,
+        copiaCola: response.data.paymentCode,
+        paymentSave: paymentSave,
+      };
+    } catch (error) {
+      console.error('Error:', error);
+      throw new Error(`Erro ao gerar PIX SuitPay: ${error.message}`);
+    }
   }
 }

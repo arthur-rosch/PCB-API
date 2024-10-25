@@ -50,9 +50,10 @@ export class SchedulingService {
         throw new Error('Erro ao obter tipo de serviço.');
       }
 
-      const pixData: any = await this.paymentService.createPIX({
-        nome: pessoais.nome_completo,
-        documento: pessoais.cpf,
+      const pixData: any = await this.paymentService.createPixSuitPay({
+        name: pessoais.nome_completo,
+        document: pessoais.cpf,
+        email: pessoais.email,
         servico: servico,
       });
 
@@ -98,8 +99,8 @@ export class SchedulingService {
       await this.schedulingRepository.save(scheduling);
 
       return {
-        image: pixData.image,
-        copiaCola: pixData.copiaCola,
+        image: pixData.paymentCodeBase64,
+        copiaCola: pixData.paymentCode,
         amount: pixData.paymentSave.amount,
         idPaymentScheduling: pixData.paymentSave.id,
       };
