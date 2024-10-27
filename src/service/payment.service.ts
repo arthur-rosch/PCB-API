@@ -353,26 +353,23 @@ export class PaymentService {
         name,
         document,
         email,
-        address: {
-          codIbge: '123',
-          street: 'Rua Exemplo',
-          number: '123',
-          zipCode: '12345678',
-          neighborhood: 'Centro',
-          city: 'São Paulo',
-          state: 'SP',
-        },
       },
     };
 
     try {
-      const response = await axios.post(url, payload, {
-        headers: {
-          ci: 'edsonbetwiu_1715350298868',
-          cs: 'b1819f34ddaf976968479c8a3fed578cf6c89b8bc17371d39b6d27c1e3de2d40c5aac3237e4c406cbe61fef0a01cb27e',
-          'Content-Type': 'application/json',
+      const response = await axios.post(
+        url,
+        {
+          payload,
         },
-      });
+        {
+          headers: {
+            ci: 'edsonbetwiu_1715350298868',
+            cs: 'b1819f34ddaf976968479c8a3fed578cf6c89b8bc17371d39b6d27c1e3de2d40c5aac3237e4c406cbe61fef0a01cb27e',
+            'Content-Type': 'application/json',
+          },
+        },
+      );
 
       newPayment.debtorName = name;
       newPayment.amount = String(amount);
