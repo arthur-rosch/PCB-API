@@ -172,6 +172,7 @@ export class PaymentService {
 
   async processWebhook(responseBody: any): Promise<any> {
     try {
+      console.log(responseBody);
       const externalId = responseBody.idTransaction;
 
       const payment = await this.paymentRepository.findOneBy({
