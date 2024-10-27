@@ -325,9 +325,13 @@ export class PaymentService {
     name: string;
     document: string;
     email: string;
-  }) {
+  }): Promise<{
+    image: string;
+    copiaCola: string;
+    paymentSave: Payment;
+  }> {
     const newPayment = new Payment();
-    const url = `https://ws.suitpay.app/api/v1/gateway/request-qrcode`;
+    const url = `https://sandbox.ws.suitpay.app/api/v1/gateway/request-qrcode`;
 
     const today = new Date();
     const dueDate = new Date(today);
@@ -362,15 +366,13 @@ export class PaymentService {
     };
 
     try {
-      const response = await this.httpService
-        .post(url, payload, {
-          headers: {
-            ci: 'edsonbetwiu_1715350298868',
-            cs: 'b1819f34ddaf976968479c8a3fed578cf6c89b8bc17371d39b6d27c1e3de2d40c5aac3237e4c406cbe61fef0a01cb27e',
-            'Content-Type': 'application/json',
-          },
-        })
-        .toPromise();
+      const response = await axios.post(url, payload, {
+        headers: {
+          ci: 'edsonbetwiu_1715350298868',
+          cs: 'b1819f34ddaf976968479c8a3fed578cf6c89b8bc17371d39b6d27c1e3de2d40c5aac3237e4c406cbe61fef0a01cb27e',
+          'Content-Type': 'application/json',
+        },
+      });
 
       newPayment.debtorName = name;
       newPayment.amount = String(amount);
@@ -387,7 +389,25 @@ export class PaymentService {
         paymentSave: paymentSave,
       };
     } catch (error) {
-      console.error('Error:', error);
+      if (error.response) {
+        // Quando a API responde com um erro (4xx, 5xx)
+        console.error('Erro na resposta da SuitPay:', {
+          status: error.response.status,
+          headers: error.response.headers,
+          data: error.response.data,
+        });
+      } else if (error.request) {
+        // Quando a requisição foi enviada mas não houve resposta
+        console.error('Nenhuma resposta da SuitPay. Request:', error.request);
+      } else {
+        // Erro na configuração da requisição ou algo inesperado
+        console.error(
+          'Erro ao configurar a requisição para SuitPay:',
+          error.message,
+        );
+      }
+
+      // Lança um erro com uma mensagem específica para controle
       throw new Error(`Erro ao gerar PIX SuitPay: ${error.message}`);
     }
   }
