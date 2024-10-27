@@ -360,7 +360,33 @@ export class PaymentService {
       const response = await axios.post(
         url,
         {
-          payload,
+          requestNumber: '12345',
+          dueDate: '2022-10-30',
+          amount: 300.0,
+          shippingAmount: 0.0,
+          discountAmount: 0.0,
+          usernameCheckout: 'checkout',
+          callbackUrl: 'https://webhook.com/',
+          client: {
+            name: 'José da Silva',
+            document: '927.300.300-18',
+            phoneNumber: '62999815500',
+            email: 'josesilva@gmail.com',
+            address: {
+              codIbge: '5208707',
+              street: 'Rua Paraíba',
+              number: '150',
+              complement: '',
+              zipCode: '74663-520',
+              neighborhood: 'Goiânia 2',
+              city: 'Goiânia',
+              state: 'GO',
+            },
+          },
+          products: [
+            { description: 'Tênis', quantity: 1, value: 200.0 },
+            { description: 'Camiseta M', quantity: 2, value: 50.0 },
+          ],
         },
         {
           headers: {
