@@ -23,9 +23,7 @@ export class PaymentController {
   @ApiResponse({ status: 200, description: 'Webhook processed successfully.' })
   @HttpCode(200)
   async processWebhook(@Body() response: any) {
-    const { requestBody } = response;
-    console.log(response);
-    await this.paymentService.processWebhook(requestBody);
+    await this.paymentService.processWebhook(response);
     return;
   }
 
