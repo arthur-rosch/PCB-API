@@ -24,6 +24,7 @@ export class PaymentController {
   @HttpCode(200)
   async processWebhook(@Body() response: any) {
     const { requestBody } = response;
+    console.log(response);
     await this.paymentService.processWebhook(requestBody);
     return;
   }
