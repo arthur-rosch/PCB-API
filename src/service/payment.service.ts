@@ -331,7 +331,7 @@ export class PaymentService {
     paymentSave: Payment;
   }> {
     const newPayment = new Payment();
-    const url = `https://sandbox.ws.suitpay.app/api/v1/gateway/request-qrcode`;
+    const url = `https://ws.suitpay.app/api/v1/gateway/request-qrcode`;
 
     const today = new Date();
     const dueDate = new Date(today);
