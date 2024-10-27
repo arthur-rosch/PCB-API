@@ -99,8 +99,8 @@ export class SchedulingService {
       await this.schedulingRepository.save(scheduling);
 
       return {
-        image: pixData.paymentCodeBase64,
-        copiaCola: pixData.paymentCode,
+        image: pixData.image,
+        copiaCola: pixData.copiaCola,
         amount: pixData.paymentSave.amount,
         idPaymentScheduling: pixData.paymentSave.id,
       };

@@ -6,17 +6,16 @@ import {
   CLIENT_ID,
   CLIENT_SECRET,
   VALUE_SCHEDULING,
-  SECRET_BOT_KEY,
   VALUE_SCHEDULING_CNH,
 } from 'src/configs/general.config';
 import { Payment } from 'src/entity/payment.entity';
 import { Scheduling } from 'src/entity/scheduling.entity';
 import { Repository } from 'typeorm';
 import * as nodemailer from 'nodemailer';
-import path from 'path';
+
 import { readFileSync } from 'fs';
 import * as Handlebars from 'handlebars';
-import { PixRequest } from 'src/types';
+
 import { randomUUID } from 'crypto';
 
 @Injectable()
@@ -173,7 +172,7 @@ export class PaymentService {
 
   async processWebhook(responseBody: any): Promise<any> {
     try {
-      const externalId = responseBody.external_id;
+      const externalId = responseBody.idTransaction;
 
       const payment = await this.paymentRepository.findOneBy({
         id: externalId,
@@ -183,7 +182,7 @@ export class PaymentService {
         throw new Error('Payment not found');
       }
 
-      payment.paymentStatus = responseBody.transactionType;
+      payment.paymentStatus = responseBody.statusTransaction;
 
       await this.paymentRepository.save(payment);
 
@@ -287,7 +286,10 @@ export class PaymentService {
         serviço: personalInfo.servico,
       };
 
-      if (payment.paymentStatus === 'RECEIVEPIX') {
+      if (
+        payment.paymentStatus === 'RECEIVEPIX' ||
+        payment.paymentStatus === 'PAID_OUT'
+      ) {
         return formatedReturn;
       } else {
         return { status: payment.paymentStatus };
@@ -337,13 +339,17 @@ export class PaymentService {
     const dueDate = new Date(today);
     dueDate.setDate(today.getDate() + 1);
 
-    const amount =
-      servico === 'CNH'
-        ? Number(VALUE_SCHEDULING_CNH)
-        : Number(VALUE_SCHEDULING);
+    const amount = 1;
+    // servico === 'CNH'
+    //   ? Number(VALUE_SCHEDULING_CNH)
+    //   : Number(VALUE_SCHEDULING);
 
-    const payload: PixRequest = {
+    const payload = {
       requestNumber: randomUUID(),
+      shippingAmount: 0.0,
+      discountAmount: 0.0,
+      usernameCheckout: 'checkout',
+      callbackUrl: 'https://webhook.com/',
       dueDate: dueDate.toISOString().split('T')[0],
       quantity: 1,
       value: amount,
@@ -355,47 +361,15 @@ export class PaymentService {
         email,
       },
     };
-
+    console.log(payload);
     try {
-      const response = await axios.post(
-        url,
-        {
-          requestNumber: '12345',
-          dueDate: '2022-10-30',
-          amount: 300.0,
-          shippingAmount: 0.0,
-          discountAmount: 0.0,
-          usernameCheckout: 'checkout',
-          callbackUrl: 'https://webhook.com/',
-          client: {
-            name: 'José da Silva',
-            document: '927.300.300-18',
-            phoneNumber: '62999815500',
-            email: 'josesilva@gmail.com',
-            address: {
-              codIbge: '5208707',
-              street: 'Rua Paraíba',
-              number: '150',
-              complement: '',
-              zipCode: '74663-520',
-              neighborhood: 'Goiânia 2',
-              city: 'Goiânia',
-              state: 'GO',
-            },
-          },
-          products: [
-            { description: 'Tênis', quantity: 1, value: 200.0 },
-            { description: 'Camiseta M', quantity: 2, value: 50.0 },
-          ],
+      const response = await axios.post(url, payload, {
+        headers: {
+          ci: 'edsonbetwiu_1715350298868',
+          cs: 'b1819f34ddaf976968479c8a3fed578cf6c89b8bc17371d39b6d27c1e3de2d40c5aac3237e4c406cbe61fef0a01cb27e',
+          'Content-Type': 'application/json',
         },
-        {
-          headers: {
-            ci: 'edsonbetwiu_1715350298868',
-            cs: 'b1819f34ddaf976968479c8a3fed578cf6c89b8bc17371d39b6d27c1e3de2d40c5aac3237e4c406cbe61fef0a01cb27e',
-            'Content-Type': 'application/json',
-          },
-        },
-      );
+      });
 
       newPayment.debtorName = name;
       newPayment.amount = String(amount);

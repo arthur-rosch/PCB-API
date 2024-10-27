@@ -10,11 +10,7 @@ export const typeOrmConfig: TypeOrmModuleOptions = {
   username: String(process.env.DB_USERNAME),
   password: String(process.env.DB_PASSWORD),
   database,
-  ssl: isProduction // Habilitar SSL apenas em produção
-    ? {
-        rejectUnauthorized: false, // Ajuste para true se você tiver um certificado de CA válido
-      }
-    : false,
+  ssl: false,
   logging: !isProduction,
   entities: [__dirname + '/../**/*.entity.{js,ts}'],
   synchronize: true,
