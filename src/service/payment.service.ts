@@ -349,7 +349,8 @@ export class PaymentService {
       shippingAmount: 0.0,
       discountAmount: 0.0,
       usernameCheckout: 'checkout',
-      callbackUrl: 'https://webhook.com/',
+      callbackUrl:
+        'https://seahorse-app-bkpbc.ondigitalocean.app/payment/webhookPix',
       dueDate: dueDate.toISOString().split('T')[0],
       quantity: 1,
       value: amount,
